@@ -15,15 +15,6 @@ bot.update_bot_info().wait()
 print "Bot {} loaded.".format(bot.username)
 
 
-"""
-Send a message to a user
-"""
-#user_id = int(<someuserid>)
-
-#result = bot.send_message(user_id, 'test message body').wait()
-#print(result)
-
-
 def process(update):
     update_id = update.update_id
     Update = Query()
@@ -42,6 +33,18 @@ def process(update):
             else:
                 user_info = result[0]
                 bot.send_message(sender.id, "You are already my sir since {} seconds ago.".format(int(time()-user_info['creation_time'])))
+        elif text == "test":
+            # Ask for a custom answer
+            keyboard = [
+                ['7', '8', '9'],
+                ['4', '5', '6'],
+                ['1', '2', '3'],
+                ['0', 'YES', 'NO'],
+            ]
+            reply_markup = ReplyKeyboardMarkup.create(keyboard)
+
+            bot.send_message(sender.id, 'answer me!', reply_markup=reply_markup).wait()
+
     else:
         print "Ignored update with ID {}".format(update_id)
 
@@ -49,21 +52,10 @@ def process(update):
 """
 Get updates sent to the bot
 """
+last_update_id = None
 while True:
-    updates = bot.get_updates().wait()
+    updates = bot.get_updates(last_update_id).wait()
     for update in updates:
         process(update)
-    sleep(5)
-
-"""
-Use a custom keyboard
-"""
-#keyboard = [
-#    ['7', '8', '9'],
-#    ['4', '5', '6'],
-#    ['1', '2', '3'],
-#         ['0']
-#]
-#reply_markup = ReplyKeyboardMarkup.create(keyboard)
-
-#bot.send_message(user_id, 'please enter a number', reply_markup=reply_markup).wait()
+        last_update_id = update.update_id + 1
+    sleep(1)
